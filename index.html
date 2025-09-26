@@ -1,288 +1,43 @@
-<!DOCTYPE html>
+!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1" />
-<title>Aurora Bank — Audit Log (Compliance)</title>
-<style>
-  /* ---------- Base / Theme ---------- */
-  :root{
-    --bg:#f4f6fb;
-    --card:#ffffff;
-    --ink:#0f172a;
-    --muted:#667085;
-    --line:#e6e7eb;
-    --primary:#2b49ff;
-    --primary-ink:#ffffff;
-    --chip:#0f172a;
-    --chip-border:#d1d5db;
-    --radius:14px;
-  }
-  *{box-sizing:border-box}
-  html,body{height:100%}
-  body{
-    margin:0; background:var(--bg); color:var(--ink);
-    font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial;
-    -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale;
-  }
-
-  /* ---------- Header ---------- */
-  header{
-    background:#0f172a; color:#fff; padding:16px 22px; font-weight:700;
-    position:sticky; top:0; z-index:10;
-  }
-  header .sub{font-weight:500; opacity:.8}
-
-  /* ---------- Layout ---------- */
-  .wrap{max-width:1180px; margin:24px auto 64px; padding:0 16px}
-  .card{
-    background:var(--card); border:1px solid var(--line); border-radius:var(--radius);
-    box-shadow:0 1px 3px rgba(0,0,0,.06); overflow:hidden;
-  }
-  .card h2{margin:0; padding:16px 20px; border-bottom:1px solid #eef0f3; font-size:20px}
-
-  /* ---------- Filters ---------- */
-  .toolbar{
-    padding:16px 20px; display:flex; flex-wrap:wrap; gap:12px 14px; align-items:flex-end;
-  }
-  .field{display:flex; flex-direction:column; gap:6px; min-width:210px}
-  .field label{font-size:12px; color:var(--muted)}
-  input,select{
-    height:40px; padding:0 12px; border:1px solid #e0e3e8; border-radius:10px; background:#fff; color:var(--ink);
-    outline:none;
-  }
-  input::placeholder{color:#98a2b3}
-  .controls{display:flex; gap:10px}
-  button{
-    height:40px; padding:0 16px; border:1px solid #e0e3e8; border-radius:10px; background:#fff; color:var(--ink);
-    cursor:pointer;
-  }
-  .btn-primary{background:var(--primary); color:var(--primary-ink); border-color:var(--primary); font-weight:600}
-  button:active{transform:translateY(1px)}
-
-  .actions{
-    display:flex; align-items:center; gap:8px; padding:12px 20px; border-top:1px solid #eef0f3;
-  }
-  .spacer{margin-left:auto}
-
-  .badge{
-    display:inline-block; padding:6px 10px; border-radius:999px; border:1px solid #cdd3df; font-size:12px; color:#384253; background:#eef2ff;
-  }
-
-  /* ---------- Table ---------- */
-  .table-wrap{overflow:auto; max-height:62vh}
-  table{width:100%; border-collapse:collapse}
-  thead th{
-    position:sticky; top:0; background:#fafafa; border-bottom:1px solid #eef0f3;
-    color:#475466; font-size:12px; text-align:left; padding:12px 16px;
-  }
-  tbody td{padding:12px 16px; border-bottom:1px solid #f2f3f6; font-size:14px; color:#111827}
-  tbody tr:hover{background:#f9fbff}
-
-  /* Chips like in your screenshots */
-  .chip{
-    display:inline-block; padding:4px 10px; border-radius:999px; font-size:12px; font-weight:600;
-    border:1px solid var(--chip-border); background:#fff; color:#111;
-  }
-  .chip.dark{background:#0f172a; color:#fff; border-color:#0f172a}  /* APPROVE */
-  .chip.light{background:#fff}                                      /* UPLOAD_DOC / UPDATE / RULES_EVALUATE */
-  .chip.warn{background:#fff; border-color:#f3c9c9; color:#8b0000}  /* REJECT */
-  .muted{color:var(--muted); font-size:12px}
-
-  /* ---------- Footer / Pager ---------- */
-  .footer{
-    padding:12px 20px; display:flex; align-items:center; gap:12px; color:var(--muted);
-    border-top:1px solid #eef0f3;
-  }
-  .pager{margin-left:auto; display:flex; gap:8px; align-items:center}
-  .pager button{height:34px; padding:0 12px; border-radius:999px}
-  .pill{border-radius:999px}
-
-  @media (max-width:760px){
-    .field{min-width:160px}
-    header .sub{display:none}
-  }
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aurora Loan Application Logs</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; background-color: #f4f4f4; }
+        h1 { color: #333; text-align: center; }
+        table { width: 100%; border-collapse: collapse; margin: 20px 0; background: white; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        th, td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
+        th { background-color: #4CAF50; color: white; }
+        tr:hover { background-color: #f5f5f5; }
+        button { background-color: #4CAF50; color: white; padding: 10px 20px; border: none; cursor: pointer; font-size: 16px; margin: 20px auto; display: block; }
+        button:hover { background-color: #45a049; }
+        .immutable-note { text-align: center; color: #666; font-style: italic; margin: 10px 0; }
+    </style>
 </head>
 <body>
-  <header>
-    Aurora Bank — <span class="sub">Audit Log (Compliance)</span>
-  </header>
-
-  <main class="wrap">
-    <section class="card" aria-label="Audit Log">
-      <h2>Filters</h2>
-      <div class="toolbar">
-        <div class="field">
-          <label for="f-app">Application ID</label>
-          <input id="f-app" placeholder="LN-2025-00421" />
-        </div>
-        <div class="field">
-          <label for="f-user">User</label>
-          <input id="f-user" placeholder="username" />
-        </div>
-        <div class="field">
-          <label for="f-action">Action</label>
-          <select id="f-action">
-            <option value="">Any</option>
-            <option>CREATE</option><option>UPDATE</option><option>APPROVE</option>
-            <option>REJECT</option><option>SEND_BACK</option><option>UPLOAD_DOC</option><option>RULES_EVALUATE</option>
-          </select>
-        </div>
-        <div class="field">
-          <label for="f-from">From (UTC)</label>
-          <input id="f-from" type="date" placeholder="dd - mm - yyyy" />
-        </div>
-        <div class="field">
-          <label for="f-to">To (UTC)</label>
-          <input id="f-to" type="date" placeholder="dd - mm - yyyy" />
-        </div>
-        <div class="controls">
-          <button class="btn-primary" id="btn-search">Search</button>
-          <button id="btn-reset">Reset</button>
-        </div>
-      </div>
-
-      <div class="actions">
-        <span class="badge">Read-Only • Append-Only</span>
-        <div class="spacer"></div>
-        <button id="btn-csv">Download CSV</button>
-      </div>
-
-      <div class="table-wrap">
-        <table id="log-table">
-          <thead>
+    <h1>Aurora Immutable Loan Application Logs</h1>
+    <p class="immutable-note">These logs are immutable and record key events for loan applications. Download as Excel for offline analysis.</p>
+    
+    <button onclick="downloadExcel()">Download Logs as Excel</button>
+    
+    <table id="logTable">
+        <thead>
             <tr>
-              <th>Date/Time (UTC)</th>
-              <th>User</th>
-              <th>Action</th>
-              <th>Application ID</th>
-              <th>Comments</th>
+                <th>Timestamp</th>
+                <th>Application ID</th>
+                <th>Event Type</th>
+                <th>User ID</th>
+                <th>Details</th>
+                <th>Status</th>
             </tr>
-          </thead>
-          <tbody><!-- rows injected by JS --></tbody>
-        </table>
-      </div>
+        </thead>
+        <tbody id="logBody"></tbody>
+    </table>
 
-      <div class="footer">
-        <span id="count" class="muted">Showing 0 entries</span>
-        <div class="pager">
-          <button class="pill" id="prev">◀ Prev</button>
-          <span id="page" class="muted" aria-live="polite">Page 1</span>
-          <button class="pill" id="next">Next ▶</button>
-        </div>
-      </div>
-    </section>
-  </main>
-
-<script>
-/* ---------- Sample Data (edit freely) ---------- */
-const DATA = [
-  { ts:"2025-09-20 10:32:11", user:"rashi.k",      action:"APPROVE",        appId:"LN-2025-00421", comments:"Auto-approval policy (score 812)" },
-  { ts:"2025-09-20 10:02:45", user:"hema.s",       action:"UPLOAD_DOC",     appId:"LN-2025-00421", comments:"Payslip_Jul.pdf" },
-  { ts:"2025-09-19 18:14:09", user:"system",       action:"RULES_EVALUATE", appId:"LN-2025-00421", comments:"Outcome: REFER; LTV 78%" },
-  { ts:"2025-09-19 17:55:22", user:"anjana.p",     action:"UPDATE",         appId:"LN-2025-00421", comments:"Updated income field" },
-  { ts:"2025-09-19 17:20:03", user:"priyamvada.p", action:"CREATE",         appId:"LN-2025-00421", comments:"New application" },
-  { ts:"2025-09-18 11:42:18", user:"hema.s",       action:"UPLOAD_DOC",     appId:"LN-2025-00297", comments:"BankStmt_Aug.pdf" },
-  { ts:"2025-09-18 09:04:51", user:"rashi.k",      action:"REJECT",         appId:"LN-2025-00297", comments:"Debt-to-income ratio too high" },
-  { ts:"2025-09-17 16:28:37", user:"system",       action:"RULES_EVALUATE", appId:"LN-2025-00612", comments:"Outcome: APPROVE" },
-  { ts:"2025-09-17 12:10:05", user:"hema.s",       action:"SEND_BACK",      appId:"LN-2025-00612", comments:"Need address proof" },
-  { ts:"2025-09-17 10:54:44", user:"anjana.p",     action:"UPDATE",         appId:"LN-2025-00612", comments:"Corrected DOB" },
-  { ts:"2025-09-16 14:02:13", user:"system",       action:"RULES_EVALUATE", appId:"LN-2025-00333", comments:"Outcome: REFER; doc age > 12m" },
-  { ts:"2025-09-16 09:30:00", user:"hema.s",       action:"UPLOAD_DOC",     appId:"LN-2025-00333", comments:"PAN.pdf" },
-  { ts:"2025-09-15 19:12:45", user:"rashi.k",      action:"APPROVE",        appId:"LN-2025-00333", comments:"Manual override with notes" }
-];
-
-/* ---------- State ---------- */
-let page = 1;
-const PAGE_SIZE = 10;
-let filtered = [...DATA];
-
-/* ---------- Helpers ---------- */
-const $ = s => document.querySelector(s);
-const tbody = $("#log-table tbody");
-const countEl = $("#count");
-const pageEl = $("#page");
-
-function esc(s){return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
-
-function actionChip(action){
-  if(action === "APPROVE") return `<span class="chip dark">${esc(action)}</span>`;
-  if(action === "REJECT")  return `<span class="chip warn">${esc(action)}</span>`;
-  return `<span class="chip light">${esc(action)}</span>`;
-}
-
-function render(){
-  const start = (page-1) * PAGE_SIZE;
-  const end = start + PAGE_SIZE;
-  const view = filtered.slice(start, end);
-
-  tbody.innerHTML = view.map(r => `
-    <tr>
-      <td>${esc(r.ts)}</td>
-      <td>${esc(r.user)}</td>
-      <td>${actionChip(r.action)}</td>
-      <td>${esc(r.appId)}</td>
-      <td>${esc(r.comments)}</td>
-    </tr>
-  `).join("");
-
-  countEl.textContent = `Showing ${view.length} of ${filtered.length} entries`;
-  pageEl.textContent = `Page ${page}`;
-}
-
-function applyFilters(){
-  const qApp = $("#f-app").value.trim().toLowerCase();
-  const qUser = $("#f-user").value.trim().toLowerCase();
-  const qAction = $("#f-action").value;
-  const qFrom = $("#f-from").value ? new Date($("#f-from").value+"T00:00:00Z") : null;
-  const qTo   = $("#f-to").value   ? new Date($("#f-to").value+"T23:59:59Z") : null;
-
-  filtered = DATA.filter(r=>{
-    const ts = new Date(r.ts.replace(" ","T")+"Z");
-    if(qApp   && !r.appId.toLowerCase().includes(qApp)) return false;
-    if(qUser  && !r.user.toLowerCase().includes(qUser)) return false;
-    if(qAction && r.action !== qAction) return false;
-    if(qFrom  && ts < qFrom) return false;
-    if(qTo    && ts > qTo) return false;
-    return true;
-  });
-  page = 1; render();
-}
-
-function resetFilters(){
-  $("#f-app").value = $("#f-user").value = "";
-  $("#f-action").value = "";
-  $("#f-from").value = $("#f-to").value = "";
-  filtered = [...DATA]; page = 1; render();
-}
-
-function downloadCSV(){
-  const header = ["date_time_utc","user","action","application_id","comments"];
-  const rows = filtered.map(r => [r.ts,r.user,r.action,r.appId,r.comments]);
-  const csv = [header, ...rows].map(cols =>
-    cols.map(v => `"${String(v).replace(/"/g,'""')}"`).join(",")
-  ).join("\n");
-  const blob = new Blob([csv], {type:"text/csv;charset=utf-8"});
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(blob);
-  a.download = "audit-log-export.csv";
-  document.body.appendChild(a); a.click(); a.remove();
-}
-
-/* ---------- Events ---------- */
-$("#btn-search").addEventListener("click", applyFilters);
-$("#btn-reset").addEventListener("click", resetFilters);
-$("#btn-csv").addEventListener("click", downloadCSV);
-
-$("#prev").addEventListener("click", ()=>{ if(page>1){ page--; render(); }});
-$("#next").addEventListener("click", ()=>{
-  const max = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
-  if(page < max){ page++; render(); }
-});
-
-/* Initial render */
-render();
-</script>
+    <script src="data.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
