@@ -1,173 +1,66 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Aurora Bank — Audit Log (Compliance)</title>
-<style>
-  *{box-sizing:border-box}
-  body{margin:0;background:#f6f7fb;color:#0f172a;font-family:Inter,system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial}
-  header{background:#0f172a;color:#fff;padding:16px 20px;font-weight:700}
-  .wrap{max-width:1100px;margin:24px auto 56px;padding:0 16px}
-  .card{background:#fff;border:1px solid #e6e7eb;border-radius:14px;box-shadow:0 1px 3px rgba(0,0,0,.06);overflow:hidden}
-  .card h2{margin:0;padding:14px 18px;border-bottom:1px solid #eee;font-size:18px}
-  .toolbar{display:flex;flex-wrap:wrap;gap:12px;padding:14px 18px}
-  .field{display:flex;flex-direction:column;gap:6px;min-width:200px}
-  .field label{font-size:12px;color:#616a7a}
-  input,select,button{height:36px;padding:0 10px;border:1px solid #e0e3e8;border-radius:10px;background:#fff}
-  button.primary{background:#1f3cf2;color:#fff;border-color:#1f3cf2}
-  .actions{display:flex;gap:8px;align-items:center;padding:10px 18px;border-top:1px solid #eee}
-  .spacer{margin-left:auto}
-  .badge{display:inline-block;padding:3px 8px;border-radius:999px;border:1px solid #d9dcdf;font-size:11px}
-  .badge.read{background:#eef2ff;border-color:#c7d2fe;color:#3730a3}
-  .table-wrap{overflow:auto;max-height:65vh}
-  table{width:100%;border-collapse:collapse}
-  thead th{position:sticky;top:0;background:#fafafa;border-bottom:1px solid #eee;padding:10px 14px;font-size:12px;text-align:left;color:#414b5a}
-  tbody td{padding:10px 14px;border-bottom:1px solid #f0f1f4;font-size:13px}
-  tbody tr:hover{background:#f9fbff}
-  .chip{display:inline-block;padding:2px 8px;border-radius:999px;border:1px solid #d1d5db;font-size:11px;font-weight:600}
-  .chip.ok{background:#0f172a;color:#fff;border-color:#0f172a}
-  .footer{padding:10px 18px;display:flex;gap:10px;align-items:center;color:#616a7a;border-top:1px solid #eee}
-  .pager{margin-left:auto;display:flex;gap:6px}
-  .pager .btn{height:30px}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width"/>
+  <title>Project Log Entry</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700" rel="stylesheet">
+  <style>
+    body { background: #f4f7fb; font-family: Roboto, Arial, sans-serif; margin: 0; }
+    .container { max-width: 540px; margin: 48px auto; background: #fff; border-radius: 10px; box-shadow: 0 6px 24px #e2e5ee; padding: 40px; }
+    h2 { color: #1a4582; font-weight: 700; margin-bottom: 28px; font-size: 2rem; }
+    label { font-size: 1rem; font-weight: 600; color: #1a4582; }
+    input, textarea, select { width: 100%; padding: 10px; border: 1px solid #c7c9cd; border-radius: 4px; margin-top: 4px; margin-bottom: 18px; background: #f8fafc; font-family: inherit; }
+    textarea { resize: vertical; }
+    .actions { display: flex; gap: 16px; }
+    .btn { padding: 10px 28px; border: none; border-radius: 4px; font-weight: bold; background: #1976d2; color: #fff; cursor: pointer; font-size: 1rem; }
+    .btn:active { background: #14529e; }
+    .logs-list { margin-top: 40px; }
+    .entry { background: #f2f5fc; border-left: 4px solid #1976d2; padding: 16px 24px; border-radius: 5px; margin-bottom: 22px; }
+    .entry-title { font-weight: 700; font-size: 1.13rem; }
+    .entry-meta { color: #6b7a8a; font-size: .92rem; margin-bottom: 4px; }
+    .entry-desc { margin-top: 8px; }
+  </style>
 </head>
 <body>
-<header>Aurora Bank — Audit Log (Compliance)</header>
-
-<main class="wrap">
-  <section class="card">
-    <h2>Filters</h2>
-    <div class="toolbar">
-      <div class="field"><label for="f-app">Application ID</label><input id="f-app" placeholder="LN-2025-00421"></div>
-      <div class="field"><label for="f-user">User</label><input id="f-user" placeholder="username"></div>
-      <div class="field"><label for="f-action">Action</label>
-        <select id="f-action">
-          <option value="">Any</option><option>CREATE</option><option>UPDATE</option><option>APPROVE</option>
-          <option>REJECT</option><option>SEND_BACK</option><option>UPLOAD_DOC</option><option>RULES_EVALUATE</option>
-        </select>
+  <div class="container">
+    <h2>Log a New Project Entry</h2>
+    <form id="logForm" autocomplete="off">
+      <label for="logTitle">Title*</label>
+      <input type="text" id="logTitle" maxlength="80" placeholder="e.g. Fixed build issue, Added widget" required>
+      <label for="logType">Type</label>
+      <select id="logType">
+        <option>Feature</option>
+        <option>Bug Fix</option>
+        <option>Documentation</option>
+        <option>Refactor</option>
+        <option>Other</option>
+      </select>
+      <label for="logDesc">Description</label>
+      <textarea id="logDesc" maxlength="400" placeholder="Add details about this log entry"></textarea>
+      <div class="actions">
+        <button type="reset" class="btn" style="background:#ced4db;color:#12406a;">Clear</button>
+        <button type="submit" class="btn">Add Entry</button>
       </div>
-      <div class="field"><label for="f-from">From (UTC)</label><input type="date" id="f-from"></div>
-      <div class="field"><label for="f-to">To (UTC)</label><input type="date" id="f-to"></div>
-      <div><button class="primary" id="btn-search">Search</button> <button id="btn-reset">Reset</button></div>
-    </div>
-
-    <div class="actions">
-      <span class="badge read">Read-Only • Append-Only</span>
-      <div class="spacer"></div>
-      <button id="btn-csv">Download CSV</button>
-    </div>
-
-    <div class="table-wrap">
-      <table id="log-table">
-        <thead>
-          <tr>
-            <th>Date/Time (UTC)</th><th>User</th><th>Action</th><th>Application ID</th><th>Comments</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-    </div>
-
-    <div class="footer">
-      <span id="count">Showing 0 entries</span>
-      <div class="pager">
-        <button class="btn" id="prev">◀ Prev</button>
-        <span id="page">Page 1</span>
-        <button class="btn" id="next">Next ▶</button>
-      </div>
-    </div>
-  </section>
-</main>
-
-<script>
-const DATA = [
-  { ts:"2025-09-20 10:32:11", user:"rashi.k", action:"APPROVE",        appId:"LN-2025-00421", comments:"Auto-approval policy (score 812)" },
-  { ts:"2025-09-20 10:02:45", user:"hema.s",  action:"UPLOAD_DOC",     appId:"LN-2025-00421", comments:"Payslip_Jul.pdf" },
-  { ts:"2025-09-19 18:14:09", user:"system",  action:"RULES_EVALUATE", appId:"LN-2025-00421", comments:"Outcome: REFER; LTV 78%" },
-  { ts:"2025-09-19 17:55:22", user:"anjana.p",action:"UPDATE",         appId:"LN-2025-00421", comments:"Updated income field" },
-  { ts:"2025-09-19 17:20:03", user:"priyamvada.p",action:"CREATE",     appId:"LN-2025-00421", comments:"New application" },
-  { ts:"2025-09-18 11:42:18", user:"hema.s",  action:"UPLOAD_DOC",     appId:"LN-2025-00297", comments:"BankStmt_Aug.pdf" },
-  { ts:"2025-09-18 09:04:51", user:"rashi.k", action:"REJECT",         appId:"LN-2025-00297", comments:"Debt-to-income ratio too high" },
-  { ts:"2025-09-17 16:28:37", user:"system",  action:"RULES_EVALUATE", appId:"LN-2025-00612", comments:"Outcome: APPROVE" },
-  { ts:"2025-09-17 12:10:05", user:"hema.s",  action:"SEND_BACK",      appId:"LN-2025-00612", comments:"Need address proof" },
-  { ts:"2025-09-17 10:54:44", user:"anjana.p",action:"UPDATE",         appId:"LN-2025-00612", comments:"Corrected DOB" },
-  { ts:"2025-09-16 14:02:13", user:"system",  action:"RULES_EVALUATE", appId:"LN-2025-00333", comments:"Outcome: REFER; doc age > 12m" },
-  { ts:"2025-09-16 09:30:00", user:"hema.s",  action:"UPLOAD_DOC",     appId:"LN-2025-00333", comments:"PAN.pdf" },
-  { ts:"2025-09-15 19:12:45", user:"rashi.k", action:"APPROVE",        appId:"LN-2025-00333", comments:"Manual override with notes" }
-];
-
-let page = 1;
-const PAGE_SIZE = 10;
-let filtered = [...DATA];
-
-const $ = s => document.querySelector(s);
-const tbody = $("#log-table tbody");
-const countEl = $("#count");
-const pageEl = $("#page");
-
-function render(){
-  const start = (page-1) * PAGE_SIZE;
-  const end = start + PAGE_SIZE;
-  const view = filtered.slice(start, end);
-
-  tbody.innerHTML = view.map(r => `
-    <tr>
-      <td>${esc(r.ts)}</td>
-      <td>${esc(r.user)}</td>
-      <td>${chip(r.action)}</td>
-      <td>${esc(r.appId)}</td>
-      <td>${esc(r.comments)}</td>
-    </tr>`).join("");
-
-  countEl.textContent = `Showing ${view.length} of ${filtered.length} entr${filtered.length===1?'y':'ies'}`;
-  pageEl.textContent = `Page ${page}`;
-}
-function esc(s){return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]))}
-function chip(a){return `<span class="chip ${a==='APPROVE'?'ok':''}">${esc(a)}</span>`;}
-
-function applyFilters(){
-  const qApp = $("#f-app").value.trim().toLowerCase();
-  const qUser = $("#f-user").value.trim().toLowerCase();
-  const qAction = $("#f-action").value;
-  const qFrom = $("#f-from").value ? new Date($("#f-from").value+"T00:00:00Z") : null;
-  const qTo   = $("#f-to").value   ? new Date($("#f-to").value+"T23:59:59Z") : null;
-
-  filtered = DATA.filter(r=>{
-    const ts = new Date(r.ts.replace(" ","T")+"Z");
-    if(qApp && !r.appId.toLowerCase().includes(qApp)) return false;
-    if(qUser && !r.user.toLowerCase().includes(qUser)) return false;
-    if(qAction && r.action !== qAction) return false;
-    if(qFrom && ts < qFrom) return false;
-    if(qTo && ts > qTo) return false;
-    return true;
-  });
-  page = 1; render();
-}
-function resetFilters(){
-  $("#f-app").value = $("#f-user").value = ""; $("#f-action").value = "";
-  $("#f-from").value = $("#f-to").value = ""; filtered = [...DATA]; page = 1; render();
-}
-function downloadCSV(){
-  const header = ["date_time_utc","user","action","application_id","comments"];
-  const rows = filtered.map(r => [r.ts,r.user,r.action,r.appId,r.comments]);
-  const csv = [header,...rows].map(cols=>cols.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(",")).join("\n");
-  const a = document.createElement("a");
-  a.href = URL.createObjectURL(new Blob([csv],{type:"text/csv;charset=utf-8"}));
-  a.download = "audit-log-export.csv"; a.click();
-}
-
-$("#btn-search").addEventListener("click", applyFilters);
-$("#btn-reset").addEventListener("click", resetFilters);
-$("#btn-csv").addEventListener("click", downloadCSV);
-$("#prev").addEventListener("click", ()=>{ if(page>1){ page--; render(); }});
-$("#next").addEventListener("click", ()=>{
-  const max = Math.max(1, Math.ceil(filtered.length / PAGE_SIZE));
-  if(page<max){ page++; render(); }
-});
-
-render();
-</script>
+    </form>
+    <div class="logs-list" id="logsList"></div>
+  </div>
+  <script>
+    document.getElementById('logForm').onsubmit = function(e) {
+      e.preventDefault();
+      const title = document.getElementById('logTitle').value.trim();
+      const type = document.getElementById('logType').value.trim();
+      const desc = document.getElementById('logDesc').value.trim();
+      if(!title) return;
+      const logHTML = `
+        <div class="entry">
+          <div class="entry-title">${title} <span class="entry-meta">[${type}]</span></div>
+          <div class="entry-meta">${new Date().toLocaleString()}</div>
+          <div class="entry-desc">${desc ? desc : "<em>No description provided.</em>"}</div>
+        </div>`;
+      document.getElementById('logsList').insertAdjacentHTML('afterbegin', logHTML);
+      this.reset();
+    };
+  </script>
 </body>
 </html>
