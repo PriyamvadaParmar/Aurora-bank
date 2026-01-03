@@ -1,0 +1,54 @@
+# Agile Delivery Overview – Aurora Bank Loan Processing
+
+The project was executed using an Agile Scrum approach with time-boxed sprints.
+Each sprint focused on delivering logically grouped capabilities across the loan lifecycle.
+
+## Sprint Cadence
+- Sprint length: 4–7 days
+- Deliverables: Mock wireframes, process flows, rules tables, sample datasets
+- Tooling: Jira (story tracking – simulated), Draw.io, Excel, Markdown
+
+## Sprint Themes
+- Sprint 2: Loan enrichment & document management
+- Sprint 3: Risk, compliance & customer service
+- Sprint 4: Disbursement & regulatory closure
+
+Detailed sprint outcomes are documented below.
+# Sprint 2 – Loan Enrichment & Document Management
+
+**Sprint Duration:** 16–19 Sept  
+**Sprint Goal:** Enhance loan application with guarantors, collateral, documents, credit checks, and e-signature capabilities.
+
+## Key Epics Covered
+- Customer Onboarding
+- Document Management
+- Collateral
+- Approval & Risk
+
+## Selected User Stories & Deliverables
+
+### SCRUM-22: Guarantor & Reference Capture
+**Objective:** Capture secondary risk coverage through guarantor details.
+
+**Mock Deliverables:**
+- Wireframe for guarantor details screen
+- Fields: Name, Relationship, Contact Information
+- Reference section added to loan application flow
+
+---
+
+### SCRUM-28: Cloud Document Vault Storage
+**Objective:** Secure storage and retrieval of customer documents.
+
+**Mock Deliverables:**
+- Process flow: Upload → Encrypt → Store → Retrieve
+- Document lifecycle diagram created using Draw.io
+
+---
+
+### SCRUM-31: Automated LTV Calculation
+**Objective:** Automate loan-to-value risk calculation.
+
+**Logic Used:**
+LTV = (Loan Amount ÷ Collateral Value) × 100
+
